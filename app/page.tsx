@@ -8,18 +8,21 @@ import {
   Typography,
   Box,
   Zoom,
+  Alert,
 } from "@mui/material";
 import Image from "next/image";
 import pdfImage from "@/app/assets/pdfImage.png";
 import logo from "@/app/assets/logo.png";
 import { useGenerateQuiz } from "./api/quizGenerator";
 import Loading from "./components/Loading";
+import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.6 });
   const { mutateAsync, isPending } = useGenerateQuiz();
   const setQuestions = useQuizStore((state) => state.setQuestions);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUploadClick = async () => {
     const input = document.createElement("input");
@@ -36,8 +39,12 @@ export default function Home() {
         setQuestions(questions);
         router.push("/review");
       } catch (err) {
-        alert(err || "Erro ao gerar quiz");
+        if (err) {
+          const message = "We're facing issues while generating quiz questions. Try again later";
+          setError(message);
+        }
       }
+
     };
   };
 
@@ -69,6 +76,14 @@ export default function Home() {
         </Typography>
       </Stack>
 
+      {error && (
+        <Box maxWidth={480} width="100%">
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        </Box>
+      )}
+      
       <Zoom in={inView} timeout={500}>
         <Box
           sx={{
