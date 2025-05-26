@@ -18,6 +18,14 @@ const PracticeQuestion: React.FC<PracticeQuestionProps> = ({ index, isReview }) 
   const question = questions[index]
   const selected = userAnswers[index]
 
+  if (!question) {
+    return (
+      <Typography color="error" align="center">
+        Question not found.
+      </Typography>
+    )
+  }
+
   const handleSelect = (option: string) => {
     if (selected || isReview) return
     setUserAnswer(index, option)
